@@ -1,0 +1,33 @@
+doctype html
+html
+	head
+		title= 'Mail Client'
+		link(href='/css/bootstrap.min.css', rel='stylesheet')
+		<!--[if lt IE 9 ]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	body
+		.container
+			.col-lg-6.col-lg-offset-3(style='margin-top:10%')
+				.highlight
+					fieldset
+						legend.text-center Gmail Login
+							form.form-horizontal(name='apanel', method='POST', action='')  
+								.form-group
+									label.col-lg-4.control-label(for='inputEmail') Email
+									.col-lg-6
+										input.form-control#inputEmail(type='text', name='iEmail', placeholder='Email')
+								.form-group
+									label.col-lg-4.control-label(for='inputPassword') Password
+									.col-lg-6
+										input.form-control#inputPassword(type='password', name='iPassword', placeholder='Password')
+								.form-group
+									.col-lg-offset-4.col-lg-8
+										button.btn.btn-default(type="submit" name="login" value="do") Sign in
+					if error
+						.alert.alert-danger#error(style='margin:0px auto;')
+							p.text-center #{error}
+					else
+						.alert.alert-danger#error(style='margin:0px auto;display:none')
+			

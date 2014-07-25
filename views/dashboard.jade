@@ -1,0 +1,44 @@
+doctype
+html
+	head
+		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
+		title='Email client - ' + username
+		link(href='/css/bootstrap.min.css', rel='stylesheet')
+		link(href='/css/style.css', rel='stylesheet')
+		script(src='/js/jquery-1.7.min.js')
+		script(type='text/javascript', src='/js/global.js')
+		link(href='/css/sticky-footer-navbar.css', rel='stylesheet')
+
+	body
+		#wrap
+			.navbar.navbar-fixed-top
+				.container
+					a.navbar-brand Gmail Client
+					.nav-collapse.collapse
+						ul.nav.navbar-nav.pull-right
+							li
+								a Welcome #{username}
+							li.pull-right
+								a(href='/logout') Logout
+
+			.container
+				.row
+					.col-lg-2(style='height:500px;overflow-y: auto')
+						ul.nav.nav-pills.nav-stacked#boxes
+							li.disabled.showBox
+								a(href='/dashboard/INBOX') INBOX							
+						
+					.col-lg-10(style='height:500px;overflow-y: auto')
+						table.table.table-striped.table-hover#mails(page="0",mailBox="")
+							tbody
+								
+								
+								
+      
+		#footer
+			.container
+				p.text-muted.credit 2013 &copy; Gmail Client
+		
+		script(type='text/javascript', src='/js/bootstrap.min.js')
+
