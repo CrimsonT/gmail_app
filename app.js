@@ -25,7 +25,6 @@ if(process.env.REDISTOGO_URL) {
 }
 else
 	var store = new RedisStore({host: '127.0.0.1', port: 6379 })
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
