@@ -18,9 +18,13 @@ var routes = require('./routes/index');
 var app = express();
 
 //socket
-
-
-var store = new RedisStore({host: '127.0.0.1', port: 6379 })
+if(process.env.REDISTOGO_URL) {
+	var redisUrl = require("url").parse(process.env.REDISTOGO_URL);
+	var redisAuth = redisUrl.auth.split(':');
+	var store = new RedisStore({host: redisUrl.hostname, port: redisUrl.port, pass: redisAuth[1] })
+}
+else
+	var store = new RedisStore({host: '127.0.0.1', port: 6379 })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
