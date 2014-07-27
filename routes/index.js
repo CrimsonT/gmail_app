@@ -4,7 +4,6 @@ var router = express.Router();
 var fs = require('fs'), fileStream;
 var Imap = require('imap'),
     inspect = require('util').inspect;
-var MailListener = require("mail-listener2");
 var StringDecoder = require('string_decoder').StringDecoder;
 /* GET home page. */
 //s
@@ -448,6 +447,7 @@ function showMail(req, res) {
 						bodies: part,
 						struct : false,
 					});
+					mail2 = '';
 					msgBody.on('message', function(m, sn) {
 						m.on('body', function(stream, info) {
 							console.log(stream);

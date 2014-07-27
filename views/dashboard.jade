@@ -12,7 +12,7 @@ html
 		script
 			|var socket = io.connect('http://localhost:3000');
 			|socket.on('mail', function (data) {
-			|	console.log('socket done');
+			|	$('#mails tbody').prepend('<tr rel="' + data.seqno + '" class="showMail" mail="INBOX"><td>'+ data.mail.from[0] +'</td><td>' + data.mail.subject[0] + '</td><td>' + data.mail.date[0] + '</td></tr></table>');
 			|	console.log(data);
 			|});
 		link(href='/css/sticky-footer-navbar.css', rel='stylesheet')

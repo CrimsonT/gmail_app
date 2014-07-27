@@ -22,6 +22,7 @@ $(document).ready(function() {
 	}
 	else {
 		populateTable();
+
 	}
 
 	
@@ -339,7 +340,13 @@ function showMail(event) {
 	
 	
 	var mailSeqNo = event ? $(this).attr('rel') : mailNo;
-	var mailBox = $('table#mails').attr('mailBox');
+	
+	if(typeof $(this).attr('mail') !== 'undefined') {
+		var mailBox = 'INBOX';
+	}
+	else {
+		var mailBox = $('table#mails').attr('mailBox');
+	}
 //	var mailData = [];
 /*	$(this).children().each(function() {
 		mailData.push($(this).html());

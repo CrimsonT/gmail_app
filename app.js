@@ -20,7 +20,7 @@ var app = express();
 //socket
 
 
-var store = new RedisStore({host: '127.0.0.1', port: 6379 })
+var store = new RedisStore({host: '127.0.0.1', port: 6379 });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -48,6 +48,7 @@ var server = app.listen(app.get('port'), function() {
 });
 var io = require('socket.io').listen(server);
 
+var socketUsers = {};
 var imap;
 
 io.set('authorization', function (handshakeData, accept) {
@@ -56,7 +57,7 @@ io.set('authorization', function (handshakeData, accept) {
 	
 		handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
 		handshakeData.sessionID = handshakeData.cookie['connect.sid'].split('.')[0].substring(2);
-		console.log(handshakeData.cookie['connect.sid']);
+//		console.log(handshakeData.cookie['connect.sid']);
 		store.get(handshakeData.sessionID, function (err, session) {
 			console.log(session);
 			if(typeof session.email === 'undefined' && typeof session.password === 'undefined') {
@@ -76,9 +77,13 @@ io.set('authorization', function (handshakeData, accept) {
 });
 //var io = req.io;
 
-io.sockets.on('connection', function (client) {
+io.on('connection', function (client) {
     console.log('connected socket');
-//	console.log(socket);
+//	console.log(client.request);
+	var sessionID = client.request.headers.sessionID;
+//	console.log(handshakeData.cookie['connect.sid']);
+	socketUsers[sessionID] = client;
+
 	imap.on('error', function(err) {
 		var error = err.toString();
 		console.log(err);
@@ -103,7 +108,7 @@ io.sockets.on('connection', function (client) {
 		imap.openBox('INBOX', false, function(err, box) {});
 		
 		imap.on('mail', function(arriveMail) {
-			console.log('Mail arrived');
+			console.log('Mail arrived', arriveMail);
 			imap.openBox('INBOX', false, function(err, box) {
 				if (err) {
 //					var err = {'err' : 'not-logged-in'};
@@ -115,6 +120,7 @@ io.sockets.on('connection', function (client) {
 				
 				var f = imap.seq.fetch(box.messages.total + ':*', {
 					bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE)',
+					markSeen : true,
 					struct: true
 				});
 				f.on('message', function(msg, seqno) {
@@ -128,7 +134,7 @@ io.sockets.on('connection', function (client) {
 						stream.once('end', function() {
 							
 							mails = Imap.parseHeader(buffer);
-							client.emit('mail', { 'mail' : mails, 'seqno': seqno });
+							socketUsers[sessionID].emit('mail', { 'mail' : mails, 'seqno': seqno });
 						//console.log(mails);
 						});
 					});
@@ -144,7 +150,6 @@ io.sockets.on('connection', function (client) {
 				});
 				f.once('end', function() {
 					console.log('Disconnecting');
-					
 					});
 			});
 			
@@ -155,6 +160,10 @@ io.sockets.on('connection', function (client) {
 
 });
 
+io.on('disconnect', function() {
+	console.log('socket disconnected');
+	imap.end();
+});
 
 app.use('/', routes);
 //app.use('/users', users);
