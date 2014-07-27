@@ -11,7 +11,7 @@ html
 		script(src='/js/socket.io-1.0.6.js')
 		script
 			|var socket = io.connect('http://localhost:3000');
-			|socket.on('news', function (data) {
+			|socket.on('mail', function (data) {
 			|	console.log('socket done');
 			|	console.log(data);
 			|});

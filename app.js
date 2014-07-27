@@ -76,8 +76,8 @@ io.set('authorization', function (handshakeData, accept) {
 });
 //var io = req.io;
 
-io.sockets.on('connection', function (socket) {
-//	console.log('connected socket', imap);
+io.sockets.on('connection', function (client) {
+    console.log('connected socket');
 //	console.log(socket);
 	imap.on('error', function(err) {
 		var error = err.toString();
@@ -96,11 +96,14 @@ io.sockets.on('connection', function (socket) {
 		}	
 	
 	});
-	
+	var mails = [];
 //	console.log(mailbox);
 	imap.connect();
 	imap.once('ready', function() {
+		imap.openBox('INBOX', false, function(err, box) {});
+		
 		imap.on('mail', function(arriveMail) {
+			console.log('Mail arrived');
 			imap.openBox('INBOX', false, function(err, box) {
 				if (err) {
 //					var err = {'err' : 'not-logged-in'};
@@ -110,7 +113,7 @@ io.sockets.on('connection', function (socket) {
 				}
 				var remainMsg;
 				
-				var f = imap.seq.fetch(box.messages.total, {
+				var f = imap.seq.fetch(box.messages.total + ':*', {
 					bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE)',
 					struct: true
 				});
@@ -123,7 +126,9 @@ io.sockets.on('connection', function (socket) {
 							buffer += chunk.toString('utf8');
 						});
 						stream.once('end', function() {
-							mails[seqno] = Imap.parseHeader(buffer);
+							
+							mails = Imap.parseHeader(buffer);
+							client.emit('mail', { 'mail' : mails, 'seqno': seqno });
 						//console.log(mails);
 						});
 					});
@@ -139,18 +144,15 @@ io.sockets.on('connection', function (socket) {
 				});
 				f.once('end', function() {
 					console.log('Disconnecting');
-//					imap.end();
-					rvalue(mails);
-				});
+					
+					});
 			});
 			
 		});	
 	});
 	
-	socket.emit('news', { hello: 'world' });
-	socket.on('my other event', function (data) {
-		console.log(data);
-	});
+	
+
 });
 
 
