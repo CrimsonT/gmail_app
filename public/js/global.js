@@ -7,6 +7,17 @@ $(document).ready(function() {
 	var mailNo = Number(options[3]);
 	if(typeof options[3] !== 'undefined' && typeof mailNo === 'number' && mailNo > 0 ) {
 //			page = options[1];
+			if(options[2] !== 'INBOX' && options[2] !== '') {
+				$('table#mails').attr('mailBox', options[2]);
+			}
+			else {
+				if(options[2] === '') {
+					$('table#mails').attr('mailBox','INBOX');
+			}
+			else {
+				$('table#mails').attr('mailBox', options[2]);
+			}
+		}
 			showMail();
 	}
 	else {
@@ -33,13 +44,21 @@ function populateTable() {
 	console.log(options);
 	console.log($('table#mails').attr('page'));
 	if(typeof options[2] !== 'undefined') {
-		$('table#mails').attr('mailBox', options[2]);
+//		$('table#mails').attr('mailBox', options[2]);
 //		mailBox = options[0];
 		if(options[2] !== 'INBOX' && options[2] !== '') {
 			apiLink += '/[Gmail]' + encodeURIComponent('/' + options[2]);
+			$('table#mails').attr('mailBox', options[2]);
 		}
 		else {
-			apiLink += '/' + encodeURIComponent(options[2]);
+			if(options[2] === '') {
+				apiLink += '/' + encodeURIComponent('INBOX');
+				$('table#mails').attr('mailBox','INBOX');
+			}
+			else {
+				apiLink += '/' + encodeURIComponent(options[2]);
+				$('table#mails').attr('mailBox', options[2]);
+			}
 		}
 		page = Number($('table#mails').attr('page'));
 		if(typeof page !== 'undefined' && typeof page === 'number' && page > 0 ) {

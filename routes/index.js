@@ -7,6 +7,8 @@ var Imap = require('imap'),
 var MailListener = require("mail-listener2");
 var StringDecoder = require('string_decoder').StringDecoder;
 /* GET home page. */
+//s
+
 
 router.get('/', function(req, res) {
 	
@@ -17,8 +19,9 @@ router.get('/', function(req, res) {
 	}
 	else
 	{
-			res.location('dashboard/INBOX');
-			res.redirect('dashboard/INBOX');
+		
+		res.location('dashboard/INBOX');
+		res.redirect('dashboard/INBOX');
 	}
 });
 
@@ -62,11 +65,12 @@ router.post('/', function(req, res) {
 	//console.log(imap);
 
 	imap.once('ready', function() {
-		if(!req.session.email || !req.session.password){
+		if(!req.session.email || !req.session.password) {
+//			req.session.regenerate();
 			req.session.email = email;
 			req.session.password = password;
 		}
-		
+	
 	res.location('dashboard/INBOX');
 	res.redirect('dashboard/INBOX');
 		
@@ -145,7 +149,7 @@ router.all('/dashboard/:mailbox?/:mailNo?', function(req, res) {
 	
 	}
 	else
-	{
+	{		
 		res.render('dashboard', { username : req.session.email });
 	}
 });
@@ -218,6 +222,7 @@ function openInbox(req, res) {
 	}
 	else {
 		mailbox = decodeURIComponent(req.params.mailbox);
+		console.log(mailbox);
 	}
 	var temp = Number(req.params.page);
 	if(typeof req.params.page === 'undefined' || typeof temp !== 'number' || temp < 0) {
@@ -274,7 +279,10 @@ function openInbox(req, res) {
 					return;
 				}
 				var remainMsg;
-				if((box.messages.total - (page + 1)*50) < 0) {
+				if(box.messages.total < 50) {
+					var msgSrc = '0:' + box.messages.total;
+				}
+				else if((box.messages.total - (page + 1)*50) < 0) {
 					var msgSrc = '0:' + (box.messages.total - page*50) ;
 
 				}
@@ -311,7 +319,7 @@ function openInbox(req, res) {
 				});
 				f.once('end', function() {
 					console.log('Disconnecting');
-					imap.end();
+//					imap.end();
 					rvalue(mails);
 				});
 			});
@@ -384,8 +392,14 @@ function showMail(req, res) {
 				if (r = findTextPart(struct[i]))
 					return r;
 				} else if (struct[i].type === 'text'
-						&& struct[i].subtype === 'html')
-					return [struct[i].partID, struct[i].type + '/' + struct[i].subtype];
+						&& (struct[i].subtype === 'plain' || struct[i].subtype === 'html')) {
+							if(typeof struct[i].encoding === 'undefined' || struct[i].encoding === '') {
+							return [struct[i].partID, struct[i].type + '/' + struct[i].subtype, ''];
+							}
+							else {
+								return [struct[i].partID, struct[i].type + '/' + struct[i].subtype, struct[i].encoding];
+						}
+					}
 		}
 	}
 	
@@ -413,17 +427,25 @@ function showMail(req, res) {
 					msg.once('attributes', function(attrs) {
 						console.log(attrs.struct);
 						partID = findTextPart(attrs.struct);
-						var part = parseInt(partID.toString());
-						console.log(part);
-						getBody(part);
+						console.log(partID);
+						if(typeof partID !== 'undefined') {
+							getBody(partID);
+							
+							console.log(partID);
+							
+						}
+						else {
+							rvalue('No Body');
+						}
 					});
 				});
 				
 				
 //				console.log(bodyPart);
 				function getBody(bodyPart){
+					var part = parseInt(bodyPart[0].toString());
 					var msgBody = imap.seq.fetch(msgNo, {
-						bodies: bodyPart,
+						bodies: part,
 						struct : false,
 					});
 					msgBody.on('message', function(m, sn) {
@@ -461,10 +483,22 @@ function showMail(req, res) {
 					msgBody.once('end', function() {
 						console.log('Disconnecting');
 						imap.end();
-						if(mail2 !== '')
-							rvalue(mail2);
+						if(mail2 !== '') {
+							if(typeof bodyPart[2] !== 'undefined' || bodyPart[2] !== '') {
+								switch(bodyPart[2]) {
+									case 'BASE64':
+										mail2 = atob(mail2.slice(9));
+										rvalue(mail2);
+									default:
+										rvalue(mail2.slice(9));	
+								}											
+							}
+							else {
+								rvalue(mail2.slice(9));
+							}
+						}
 						else
-							rvalue(' ');
+							rvalue('No Body');
 					});
 				}
 			});
@@ -474,7 +508,7 @@ function showMail(req, res) {
 	
 	maildata(function(data) {
 		res.set('Content-Type', 'text/html');
-		data = data.slice(9);
+		data = '<pre>' + data + '</pre>';
 		res.send(data);
 	});
 	

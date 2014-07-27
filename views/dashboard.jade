@@ -8,6 +8,13 @@ html
 		link(href='/css/style.css', rel='stylesheet')
 		script(src='/js/jquery-1.7.min.js')
 		script(type='text/javascript', src='/js/global.js')
+		script(src='/js/socket.io-1.0.6.js')
+		script
+			|var socket = io.connect('http://localhost:3000');
+			|socket.on('news', function (data) {
+			|	console.log('socket done');
+			|	console.log(data);
+			|});
 		link(href='/css/sticky-footer-navbar.css', rel='stylesheet')
 
 	body
