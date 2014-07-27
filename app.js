@@ -18,11 +18,6 @@ var routes = require('./routes/index');
 var app = express();
 
 //socket
-<<<<<<< HEAD
-
-
-var store = new RedisStore({host: '127.0.0.1', port: 6379 });
-=======
 if(process.env.REDISTOGO_URL) {
 	var redisUrl = require("url").parse(process.env.REDISTOGO_URL);
 	var redisAuth = redisUrl.auth.split(':');
@@ -30,8 +25,6 @@ if(process.env.REDISTOGO_URL) {
 }
 else
 	var store = new RedisStore({host: '127.0.0.1', port: 6379 })
->>>>>>> 1839415cb1b1e168f5ca8ee60794a1b27b309b77
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
