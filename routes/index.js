@@ -277,6 +277,7 @@ function openInbox(req, res) {
 					console.log(err);
 					return;
 				}
+
 				
 				if(box.messages.total === 0) {
 					rvalue({ 'err' : 'no-mail' });

@@ -296,7 +296,6 @@ function showBox() {
 	
 	$.getJSON( apiLink,  function(data) {
 		$.each(data, function(key) {
-			
 			if(typeof data['err'] !== 'undefined' && data['err'] === 'not-logged-in') {
 				top.location('/');
 			}
@@ -315,6 +314,7 @@ function showBox() {
 	//				$.each(data, function(key) {
 	//				var reGex = '/\"\[(.*?)\"\]/g';
 	//				var reGex2 = '/<(.*?)>/g';
+
 	//				console.log(data[key]);
 	//				console.log(data[key]['from'][0]);
 					var senderEmail = data[key]['from'][0].match(/\<(.*?)\>/g);
