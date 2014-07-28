@@ -10,10 +10,12 @@ html
 		script(type='text/javascript', src='/js/global.js')
 		script(src='/js/socket.io-1.0.6.js')
 		script
-			|var socket = io.connect('http://dry-waters-7798.herokuapp.com');
+			|var socket = io.connect('http://localhost:3000');
 			|socket.on('mail', function (data) {
-			|	$('#mails tbody').prepend('<tr rel="' + data.seqno + '" class="showMail" mail="INBOX"><td>'+ data.mail.from[0] +'</td><td>' + data.mail.subject[0] + '</td><td>' + data.mail.date[0] + '</td></tr></table>');
-			|	console.log(data);
+			|	if($('table#mails').attr('mailBox') === 'INBOX') {
+			|		$('#mails tbody').prepend('<tr rel="' + data.seqno + '" class="showMail" mail="INBOX"><td>'+ data.mail.from[0] +'</td><td>' + data.mail.subject[0] + '</td><td>' + data.mail.date[0] + '</td></tr></table>');
+			|		console.log(data);
+			|	}
 			|});
 		link(href='/css/sticky-footer-navbar.css', rel='stylesheet')
 
