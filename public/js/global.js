@@ -78,14 +78,21 @@ function populateTable() {
 		if(typeof data['err'] !== 'undefined' && data['err'] === 'not-logged-in') {
 			top.location('/');
 		}
-		else {
+		else if(typeof data['err'] !== 'undefined' && data['err'] === 'no-mail'){
+			
+			tableContent += '<tr>';
+			tableContent += '<td>No Mails</td>';
+			tableContent += '</tr>';
+			$('#mails tbody').html(tableContent);
+		}
+		else{
 			keys = Object.keys(data);
 			console.log(keys.length);
 			for (var i = keys.length-1; i >= 0; i--) {
 				var key = keys[i];
 //				$.each(data, function(key) {
-				var reGex = '/\"\[(.*?)\"\]/g';
-				var reGex2 = '/<(.*?)>/g';
+	//			var reGex = '/\"\[(.*?)\"\]/g';
+	//			var reGex2 = '/<(.*?)>/g';
 //				console.log(data[key]);
 //				console.log(data[key]['from'][0]);
 				var senderEmail = data[key]['from'][0].match(/\<(.*?)\>/g);
@@ -289,39 +296,52 @@ function showBox() {
 	
 	$.getJSON( apiLink,  function(data) {
 		$.each(data, function(key) {
-			keys = Object.keys(data);
-			console.log(data);
-			for (var i = keys.length-1; i >= 0; i--) {
-				var key = keys[i];
-//				$.each(data, function(key) {
-				var reGex = '/\"\[(.*?)\"\]/g';
-				var reGex2 = '/<(.*?)>/g';
-//				console.log(data[key]);
-//				console.log(data[key]['from'][0]);
-				var senderEmail = data[key]['from'][0].match(/\<(.*?)\>/g);
-				if(senderEmail === null) {
-					senderEmail = data[key]['from'];
-				}
-				else {
-//					console.log(senderEmail);
-					senderEmail = senderEmail[0].split('<');
-					senderEmail = senderEmail[1].split('>')[0];
-				}
+			
+			if(typeof data['err'] !== 'undefined' && data['err'] === 'not-logged-in') {
+				top.location('/');
+			}
+			else if(typeof data['err'] !== 'undefined' && data['err'] === 'No Mail'){
 				
-//				console.log(senderEmail);
-				var subject = data[key]['subject'][0];
-				var date = new Date(data[key]['date'][0]);
-				var readDate = date.toDateString().substring(4);
-			
-			
-				tableContent += '<tr rel="' + key + '" class="showMail">';
-				tableContent += '<td>' + senderEmail + '</td>';
-				tableContent += '<td>' + subject + '</td>';
-				tableContent += '<td>' + readDate + '</td>';
+				tableContent += '<tr rel="">';
+				tableContent += '<td>No Mails</td>';
 				tableContent += '</tr>';
+				$('#mails tbody').html(tableContent);
+			}
+			else{
+				console.log(data);
+				keys = Object.keys(data);
+				for (var i = keys.length-1; i >= 0; i--) {
+					var key = keys[i];
+	//				$.each(data, function(key) {
+	//				var reGex = '/\"\[(.*?)\"\]/g';
+	//				var reGex2 = '/<(.*?)>/g';
+	//				console.log(data[key]);
+	//				console.log(data[key]['from'][0]);
+					var senderEmail = data[key]['from'][0].match(/\<(.*?)\>/g);
+					if(senderEmail === null) {
+						senderEmail = data[key]['from'];
+					}
+					else {
+//						console.log(senderEmail);
+						senderEmail = senderEmail[0].split('<');
+						senderEmail = senderEmail[1].split('>')[0];
+					}
+				
+	//				console.log(senderEmail);
+					var subject = data[key]['subject'][0];
+					var date = new Date(data[key]['date'][0]);
+					var readDate = date.toDateString().substring(4);
+				
 			
-//			console.log(tableContent);
-		}
+					tableContent += '<tr rel="' + key + '" class="showMail">';
+					tableContent += '<td>' + senderEmail + '</td>';
+					tableContent += '<td>' + subject + '</td>';
+					tableContent += '<td>' + readDate + '</td>';
+					tableContent += '</tr>';
+				
+	//			console.log(tableContent);
+				}
+			}
 		});
 		$('table#mails').attr('mailBox', options[2]);
 		$('table#mails').attr('page', 0);

@@ -277,12 +277,16 @@ function openInbox(req, res) {
 					console.log(err);
 					return;
 				}
-				var remainMsg;
-				if(box.messages.total < 50) {
-					var msgSrc = '0:' + box.messages.total;
+				
+				if(box.messages.total === 0) {
+					rvalue({ 'err' : 'no-mail' });
+					return;
+				}
+				else if(box.messages.total < 50) {
+					var msgSrc = box.messages.total + ':1';
 				}
 				else if((box.messages.total - (page + 1)*50) < 0) {
-					var msgSrc = '0:' + (box.messages.total - page*50) ;
+					var msgSrc = '1:' + (box.messages.total - page*50) ;
 
 				}
 				else {
