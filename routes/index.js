@@ -286,9 +286,9 @@ function openInbox(req, res) {
 					var msgSrc = box.messages.total + ':1';
 				}
 				else if((box.messages.total - (page + 1)*50) < 0) {
-					var msgSrc = '1:' + (box.messages.total - page*50) ;
+					var msgSrc = (box.messages.total - page*50) + ':1';
 
-				}
+				} 
 				else {
 					var msgSrc = (box.messages.total - (page + 1)*50) + ':' + (box.messages.total - page*50) ;				
 				}
