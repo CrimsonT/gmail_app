@@ -17,7 +17,7 @@
     "imap": "*",
     "jade": "~1.3.0",
     "mail-listener2": "^0.1.5",
-    "morgan": "~1.0.0",
+    "morgan": "~1.10.0",
     "socket.io": "^1.0.6",
     "static-favicon": "~1.0.0"
   },
